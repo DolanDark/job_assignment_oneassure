@@ -44,3 +44,9 @@
 3. "/result" - Route that gives the result table after taking in the data array generated in "calculate_premium".
 
 4. "/update_premium_sheet" - Updates the sheetdata stored on the mongo cluster with the local datasheet available.
+
+<br/><br/>
+<br/><br/>
+![alt text](home_page.png "HomePage")
+
+![alt text](result_page.png "ResultPage")
