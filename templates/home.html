@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% block title %}Home page{% endblock %}
+{% block content %}
+
+  <div class="container">
+
+    <label for="sumInsuredDropdown">Select Sum to Insure:</label>
+    <select id="sumInsuredDropdown" name="SumInsured" class="form-control"></select>
+    <br/>
+
+    <label for="tenureDropDown">Select Tenure Period:</label>
+    <select id="tenureDropDown" name="Tenure" class="form-control"></select>
+    <br/>
+
+    <label for="tierDropDown">Select Tier Group:</label>
+    <select id="tierDropDown" name="Tier" class="form-control"></select>
+    <br/>
+    <br/>
+
+    <div class="wrap">
+      <button id = "para" class="add">Add Member</button> 
+    </div>
+    <br/>
+    <div id="userList" class="inp-group">
+
+    </div>
+    <br/>
+    <br/>
+    <button type="submit" id="getPremium" class="btn btn-primary">Get Premium</button>
+
+  </div>
+
+  
+  
+  <script>
+    document.getElementById("para").onclick = function() {
+      addInput()  
+    };
+
+    document.getElementById("getPremium").onclick = function() {
+      saveInput()  
+    };
+
+    
+    function addInput(){
+      
+      console.log('Adding New Entry')
+
+      const addBin = document.querySelector(".add");
+      const input = document.querySelector(".inp-group");
+
+      const userName = document.createElement("input");
+      userName.type="text";
+      userName.name="name";
+      userName.placeholder="Enter full name";
+      userName.text="Name";
+      userName.setAttribute("class", "form-control");
+
+      var selectList = document.createElement("select");
+      var userTypeData = {
+        "Individual": "individual",
+        "Child": "child"};
+
+      selectList.setAttribute("class", "form-control");
+      selectList.setAttribute("name", "type");
+
+      generateOptions(selectList,userTypeData)
+
+      const userAge = document.createElement("input");
+      userAge.type="date";
+      userAge.placeholder="Select age";
+      userAge.text="Enter Date of Birth";
+      userAge.name="age";
+      userAge.setAttribute("class", "form-control");
+      
+      const btn=document.createElement("a");
+      btn.className = "delete";
+      btn.innerHTML = "&times";
+
+      btn.addEventListener("click", removeInput);
+
+      const flex=document.createElement("div");
+      flex.className = "flex";
+      flex.style = "padding:1%";
+
+      input.appendChild(flex);
+      flex.appendChild(userName);
+      flex.appendChild(selectList);
+      flex.appendChild(userAge);
+      flex.appendChild(btn);
+
+
+    }
+
+    function removeInput(){
+      console.log("Remove an element")
+      this.parentElement.remove()
+    }
+    
+    const sumInsuredDropdown = document.getElementById("sumInsuredDropdown");
+    const sumInsuredData = {
+            "3,00,000 Rs": 300000,
+            "4,00,000 Rs": 400000,
+            "5,00,000 Rs": 500000
+          };
+    
+    const tenureDropDown = document.getElementById("tenureDropDown");
+    const tenureData = {
+      "1 Year":1,
+      "2 Years":2,
+      "3 Years":3
+    }
+
+    const tierDropDown = document.getElementById("tierDropDown");
+    const tierData = {
+      "Tier 1": 1,
+      "Tier 2": 2
+    }
+
+    function generateOptions(documentObj, arrData){
+      for (let key in arrData) {
+        let option = document.createElement("option");
+        option.setAttribute('value', arrData[key]);
+        let optionText = document.createTextNode(key);
+        option.appendChild(optionText);
+        documentObj.appendChild(option);
+      }
+    }
+
+    generateOptions(sumInsuredDropdown,sumInsuredData)
+    generateOptions(tenureDropDown, tenureData)
+    generateOptions(tierDropDown, tierData)
+
+  function saveInput(){
+
+    var sumInsured = document.getElementById("sumInsuredDropdown");
+    var sumInsuredvalue = sumInsured.value;
+
+    var tenure = document.getElementById("tenureDropDown");
+    var tenureValue = tenure.value;
+
+    var tier = document.getElementById("tierDropDown");
+    var tierValue = tier.value;
+
+    // var text = e.options[e.selectedIndex].text;
+
+    console.log("VAR >", sumInsuredvalue, ">", tenureValue, ">", tierValue)
+
+    var requestPayload = {
+      "sumInsured": sumInsuredvalue,
+      "tenure": tenureValue,
+      "cityTier": tierValue
+    }
+
+    var ancestor = document.getElementById('userList');
+    descendents = ancestor.getElementsByTagName('*');
+
+    // console.log("DESCEN", descendents, "<<")
+
+    var tempArr = []
+    for (i = 0, j = 0; i < descendents.length; ++i) {
+      e = descendents[i];
+      if (e.className == "form-control") {
+        tempDict = {}
+        tempDict[e.name] = e.value
+        tempArr.push(tempDict)
+      }
+    }
+
+    function groupArr(data, n) {
+      var group = [];
+      for (var i = 0, j = 0; i < data.length; i++) {
+          if (i >= n && i % n === 0)
+              j++;
+          group[j] = group[j] || {};
+          group[j] = Object.assign({}, group[j], data[i])
+          console.log(data[i])
+      }
+      return group;
+      }
+
+    memberListArr = groupArr(tempArr, 3);
+    requestPayload["memberList"] = memberListArr
+
+    console.log("PAYLOAD > ", requestPayload, "<<")
+    
+    fetch(`/calculate_premium`, {
+      method: "POST",
+      body: JSON.stringify(requestPayload),
+      redirect: 'follow',
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      }
+    })
+      .then(response => {
+        console.log(response)
+        if(response.redirected){
+            window.location.href = response.url;
+        }
+      })
+      // .then(function (result) {
+      //   if (result.status === 1) {
+      //     node.parentNode.removeChild(node);
+      //     console.log(result);
+      //   }
+      //   // location.reload();
+      // })
+      .catch(function (err) {
+        console.log(err);
+      });
+  }
+  </script>
+
+{% endblock %}

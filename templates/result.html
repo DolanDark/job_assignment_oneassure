@@ -1,0 +1,48 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content %}
+    <!-- <h1 align="center">Hey, you are on the admin page</h1> -->
+    <br>
+    <h2 align="center">Premium Data</h2>
+    <br>
+    <br>
+        <div align="center">
+        <table class="table center">
+            <thead class="thead-dark">
+                <tr>
+                    <th></th>
+                    {% for item in items %}
+                        <th scope="col">{{item.name}}</th>
+                    {% endfor %}   
+                </tr>
+            </thead>
+            <TR>
+                <td>User Type</td>
+                {% for item in items %}
+                    <TD class="c1">{{item.type}}</TD>
+                {% endfor %}
+            </TR>
+            <TR>
+                <td>Base Rate</td>
+                {% for item in items %}
+                    <TD class="c1">{{item.baseRate}}</TD>
+                {% endfor %}
+            </TR>
+            <TR>
+                <td>Floater Discount</td>
+                {% for item in items %}
+                    <TD class="c1">{{item.floaterDiscount}}</TD>
+                {% endfor %}
+            </TR>
+            <TR>
+                <td>Discounted Rate</td>
+                {% for item in items %}
+                    <TD class="c1">{{item.baseRate}}</TD>
+                {% endfor %}
+            </TR>
+            <TR>
+                <td>Total</td>
+                <TD class="c1">{{total}}</TD>
+            </TR>
+
+            </table>
+        </div>
+{% endblock %}
